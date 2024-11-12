@@ -41,9 +41,10 @@ with open("spam_classifier.pkl", "wb") as f:
 print("Model and vectorizer saved successfully.")
 
 
-
 import streamlit as st
 import pickle
+import pandas as pd
+import os
 
 # Load the saved vectorizer and model
 with open("vectorizer.pkl", "rb") as f:
@@ -59,6 +60,22 @@ st.write("Enter a message to classify if it's spam or ham")
 # Text input for the message
 user_input = st.text_input("Message")
 
+# Define the function to save input and classification to Excel
+def save_to_excel(message, classification, filename="classified_messages.xlsx"):
+    # Check if the Excel file exists
+    if os.path.exists(filename):
+        # Load existing data
+        df = pd.read_excel(filename)
+    else:
+        # Create a new DataFrame if file doesn't exist
+        df = pd.DataFrame(columns=["Message", "Classification"])
+
+    # Append the new message and classification result
+    new_entry = pd.DataFrame({"Message": [message], "Classification": [classification]})
+    df = pd.concat([df, new_entry], ignore_index=True)
+
+    # Save the updated DataFrame to Excel
+    df.to_excel(filename, index=False)
 
 if st.button("Classify Message"):
     if user_input:
@@ -66,10 +83,16 @@ if st.button("Classify Message"):
         transformed_message = cv.transform([user_input]).toarray()
         prediction = model.predict(transformed_message)
 
-        # Output prediction
+        # Determine classification
         if prediction[0] == "spam":
-            st.error("This message is classified as Spamming Message!")
+            classification = "Spam"
+            st.error("This message is classified as a Spamming Message!")
         else:
-            st.success("This message is classified as Satisfied Message!")
+            classification = "Ham"
+            st.success("This message is classified as a Satisfied Message!")
+
+        # Save the input and result to Excel
+        save_to_excel(user_input, classification)
+        st.info("Message and classification saved to Excel.")
     else:
         st.warning("Please enter a message to classify.")
