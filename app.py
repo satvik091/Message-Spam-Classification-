@@ -68,8 +68,8 @@ if st.button("Classify Message"):
 
         # Output prediction
         if prediction[0] == "spam":
-            st.error("This message is classified as Spam!")
+            st.error("This message is classified as Spamming Message!")
         else:
-            st.success("This message is classified as Ham!")
+            st.success("This message is classified as Satisfied Message!")
     else:
         st.warning("Please enter a message to classify.")
