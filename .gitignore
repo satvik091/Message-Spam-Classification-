@@ -1,0 +1,11 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore model files and data (if not needed in the repo)
+*.pkl
+
+# Ignore virtual environment
+venv/
+.env/
