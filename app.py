@@ -4,9 +4,11 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import pickle
+import os
+import streamlit as st
 
 # Load the dataset
-df = pd.read_csv("spam .csv")  # Ensure the correct path to your CSV file
+df = pd.read_csv("spam.csv")  # Ensure the correct path to your CSV file
 y = df['Category']  # The target column, typically labeled as 'spam' or 'ham'
 x = df['Message']  # The text messages to classify
 
@@ -40,19 +42,6 @@ with open("spam_classifier.pkl", "wb") as f:
 
 print("Model and vectorizer saved successfully.")
 
-
-import streamlit as st
-import pickle
-import pandas as pd
-import os
-
-# Load the saved vectorizer and model
-with open("vectorizer.pkl", "rb") as f:
-    cv = pickle.load(f)
-
-with open("spam_classifier.pkl", "rb") as f:
-    model = pickle.load(f)
-
 # Streamlit app code
 st.title("Spam Message Classifier")
 st.write("Enter a message to classify if it's spam or ham")
@@ -75,7 +64,7 @@ def save_to_excel(message, classification, filename="classified_messages.xlsx"):
     df = pd.concat([df, new_entry], ignore_index=True)
 
     # Save the updated DataFrame to Excel
-    df.to_excel(filename, index=False)
+    df.to_excel(filename, index=False, engine='openpyxl')  # Ensure openpyxl is used for Excel
 
 if st.button("Classify Message"):
     if user_input:
@@ -86,10 +75,10 @@ if st.button("Classify Message"):
         # Determine classification
         if prediction[0] == "spam":
             classification = "Spam"
-            st.error("This message is classified as a Spamming Message!")
+            st.error("This message is classified as Spam!")
         else:
             classification = "Ham"
-            st.success("This message is classified as a Satisfied Message!")
+            st.success("This message is classified as Not Spam!")
 
         # Save the input and result to Excel
         save_to_excel(user_input, classification)
